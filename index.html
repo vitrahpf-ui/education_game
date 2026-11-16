@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunia Bermain & Belajar PAUD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .bouncy { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .bouncy:hover { transform: translateY(-3px); }
+        .bouncy:active { transform: scale(0.97); }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-pink-300 via-sky-300 to-indigo-400 min-h-screen text-slate-800 p-4 md:p-6 select-none">
+
+    <!-- HEADER UTAMA -->
+    <header class="max-w-5xl mx-auto bg-white/90 backdrop-blur-md rounded-2xl shadow-lg px-5 py-3 mb-5 flex flex-col sm:flex-row justify-between items-center border-b-4 border-pink-400 gap-3">
+        <div class="flex items-center gap-3">
+            <div class="bg-pink-500 text-white p-2 rounded-xl text-2xl shadow-inner">🌈</div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-pink-600">Dunia Bermain & Belajar PAUD</h1>
+                <p class="text-xs text-sky-600 font-semibold">20 Game Edukasi Ceria untuk Anak</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 bg-pink-50 border-2 border-pink-300 px-3 py-1.5 rounded-xl shadow-xs">
+                <span class="text-xl">⭐</span>
+                <span id="header-stars" class="font-bold text-pink-600 text-lg">0 / 200</span>
+            </div>
+            <button onclick="toggleSound()" id="sound-btn" class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition cursor-pointer flex items-center gap-1.5">
+                🔊 Suara Aktif
+            </button>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="max-w-5xl mx-auto">
+        
+        <!-- TAMPILAN MENU UTAMA -->
+        <div id="menu-view">
+            <div class="bg-white/90 backdrop-blur-md rounded-2xl p-5 mb-5 shadow-md border-2 border-pink-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg md:text-xl font-bold text-slate-700 flex items-center gap-2">
+                        Halo Adik-Adik Pintar! <span>🦄</span>
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-500">Pilih salah satu permainan di bawah ini! Setiap game memiliki 10 soal super bervariasi.</p>
+                </div>
+                <button onclick="speak('Halo Adik-Adik Pintar! Pilih salah satu permainan di bawah ini untuk mulai bermain sambil belajar!')" class="bg-pink-400 hover:bg-pink-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-2 cursor-pointer shrink-0 bouncy">
+                    🔊 Dengarkan Sapaan
+                </button>
+            </div>
+
+            <!-- GRID 20 GAME DENGAN WARNA BERBEDA -->
+            <div id="game-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Diisi otomatis via JavaScript -->
+            </div>
+        </div>
+
+        <!-- TAMPILAN AREA BERMAIN (GAMEPLAY) -->
+        <div id="game-room" class="hidden">
+            <div class="bg-gradient-to-r from-pink-500 to-sky-500 rounded-2xl p-4 shadow-lg mb-4 text-white flex flex-col md:flex-row items-center justify-between gap-3 border-b-4 border-pink-300">
+                <button onclick="backToMenu()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer bouncy">
+                    🏠 Kembali ke Menu
+                </button>
+                <div class="text-center">
+                    <span id="room-game-id" class="text-[10px] bg-white/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold">GAME #1 DARI 20</span>
+                    <h2 id="room-game-title" class="text-base md:text-lg font-bold">Nama Game</h2>
+                </div>
+                <!-- Indikator 10 Bintang Skor per Sesi -->
+                <div id="game-stars" class="flex items-center gap-1 bg-black/20 px-3 py-1.5 rounded-xl overflow-x-auto max-w-full">
+                    <!-- 10 Bintang -->
+                </div>
+            </div>
+
+            <!-- Kotak Instruksi & Tombol Speaker Soal -->
+            <div class="bg-pink-50 rounded-2xl p-4 mb-4 shadow-sm border-2 border-pink-200 flex items-center gap-4">
+                <button onclick="speakCurrentQuestion()" class="bg-pink-400 hover:bg-pink-500 text-white p-3 rounded-2xl shadow transition cursor-pointer shrink-0 text-xl bouncy">
+                    🔊
+                </button>
+                <div>
+                    <div class="text-[10px] font-bold text-pink-600 uppercase tracking-wide">INSTRUKSI:</div>
+                    <div id="room-instruction" class="text-sm md:text-base font-bold text-slate-700">Pertanyaan akan muncul di sini...</div>
+                </div>
+            </div>
+
+            <!-- Area Konten Game & Pilihan Jawaban -->
+            <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-md border-2 border-pink-100 min-h-[320px] flex flex-col justify-between items-center text-center">
+                <div id="question-media" class="mb-4 text-6xl md:text-7xl">🍎</div>
+                <div id="options-container" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                    <!-- Tombol Pilihan Jawaban -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL SELESAI GAME -->
+        <div id="completion-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl border-4 border-pink-300">
+                <div class="text-6xl mb-3 animate-bounce">💖</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-1">Hebat Sekali!</h3>
+                <p id="completion-text" class="text-sm text-slate-600 mb-5">Kamu berhasil menyelesaikan 10 soal game ini dengan luar biasa!</p>
+                <button onclick="backToMenu()" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-2xl shadow transition cursor-pointer bouncy">
+                    Lanjut Bermain Game Lainnya 🚀
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- LOGIKA JAVASCRIPT -->
+    <script>
+        let soundEnabled = true;
+        let totalScore = 0;
+        let currentGameIndex = 0;
+        let currentQuestionIdx = 0;
+        let currentScoreCount = 0;
+        let currentActiveData = null;
+        let gameQuestions = [];
+
+        // Data 20 Game dengan Tema Warna Pink, Biru & Pelangi
+        const gamesData = [
+            { id: 1, title: "Tebak Warna Ceria", desc: "Mengenal warna dasar", icon: "🎨", color: "bg-pink-100 border-pink-300 text-pink-700 hover:bg-pink-200" },
+            { id: 2, title: "Hitung Buah Segar", desc: "Berhitung angka 1 - 10", icon: "🍎", color: "bg-sky-100 border-sky-300 text-sky-800 hover:bg-sky-200" },
+            { id: 3, title: "Mengenal Huruf A-Z", desc: "Huruf & gambar benda", icon: "🔤", color: "bg-indigo-100 border-indigo-300 text-indigo-800 hover:bg-indigo-200" },
+            { id: 4, title: "Suara Hewan Lucu", desc: "Tebak suara & ciri hewan", icon: "🦁", color: "bg-pink-200 border-pink-400 text-pink-900 hover:bg-pink-300" },
+            { id: 5, title: "Bentuk Geometri", desc: "Lingkaran, Persegi, Bintang", icon: "⭐", color: "bg-sky-200 border-sky-400 text-sky-900 hover:bg-sky-300" },
+            { id: 6, title: "Besar atau Kecil?", desc: "Membandingkan ukuran", icon: "🐘", color: "bg-purple-100 border-purple-300 text-purple-800 hover:bg-purple-200" },
+            { id: 7, title: "Panca Indera Kita", desc: "Fungsi indera tubuh", icon: "👁️", color: "bg-rose-100 border-rose-300 text-rose-800 hover:bg-rose-200" },
+            { id: 8, title: "Urutan Angka 1-5", desc: "Urutkan dari terkecil", icon: "🔢", color: "bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200" },
+            { id: 9, title: "Kendaraan & Tempatnya", desc: "Darat, Laut, dan Udara", icon: "🚗", color: "bg-pink-100 border-pink-300 text-pink-800 hover:bg-pink-200" },
+            { id: 10, title: "Cuaca & Alam", desc: "Cerah, Hujan, Pelangi", icon: "🌈", color: "bg-sky-100 border-sky-300 text-sky-800 hover:bg-sky-200" },
+            { id: 11, title: "Bagian Tubuhku", desc: "Mengenal anggota tubuh", icon: "🖐️", color: "bg-indigo-100 border-indigo-300 text-indigo-800 hover:bg-indigo-200" },
+            { id: 12, title: "Buah atau Sayur?", desc: "Memilih makanan sehat", icon: "🥦", color: "bg-pink-200 border-pink-400 text-pink-900 hover:bg-pink-300" },
+            { id: 13, title: "Siang & Malam", desc: "Aktivitas pagi & malam", icon: "🌙", color: "bg-sky-200 border-sky-400 text-sky-900 hover:bg-sky-300" },
+            { id: 14, title: "Kebiasaan Baik", desc: "Perilaku bersih & terpuji", icon: "🧼", color: "bg-purple-200 border-purple-400 text-purple-900 hover:bg-purple-300" },
+            { id: 15, title: "Mencocokkan Bayangan", desc: "Tebak siluet yang tepat", icon: "👤", color: "bg-rose-200 border-rose-400 text-rose-900 hover:bg-rose-300" },
+            { id: 16, title: "Banyak atau Sedikit?", desc: "Bandingkan jumlah benda", icon: "🍓", color: "bg-blue-200 border-blue-400 text-blue-900 hover:bg-blue-300" },
+            { id: 17, title: "Mengenal Profesi", desc: "Dokter, Polisi, Koki, Guru", icon: "👩‍⚕️", color: "bg-pink-100 border-pink-300 text-pink-800 hover:bg-pink-200" },
+            { id: 18, title: "Tebak Emosi Wajah", desc: "Senang, Sedih, Marah", icon: "😊", color: "bg-sky-100 border-sky-300 text-sky-800 hover:bg-sky-200" },
+            { id: 19, title: "Pola Warna Sederhana", desc: "Lanjutkan urutan warna", icon: "🔵", color: "bg-indigo-100 border-indigo-300 text-indigo-800 hover:bg-indigo-200" },
+            { id: 20, title: "Rambu Lalu Lintas", desc: "Arti lampu lalu lintas", icon: "🚦", color: "bg-rose-100 border-rose-300 text-rose-800 hover:bg-rose-200" }
+        ];
+
+        function renderMenu() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+            gamesData.forEach((game, idx) => {
+                const card = document.createElement('div');
+                card.className = `${game.color} border-2 rounded-2xl p-4 cursor-pointer bouncy shadow-sm flex flex-col justify-between`;
+                card.onclick = () => startSpecificGame(idx);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-3xl">${game.icon}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/70">#${game.id}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm md:text-base mb-0.5">${game.title}</h3>
+                        <p class="text-xs opacity-80">${game.desc}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-btn');
+            btn.innerText = soundEnabled ? "🔊 Suara Aktif" : "🔇 Suara Mati";
+            btn.className = soundEnabled ? "bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition cursor-pointer flex items-center gap-1.5" : "bg-slate-400 hover:bg-slate-500 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition cursor-pointer flex items-center gap-1.5";
+        }
+
+        function speak(text) {
+            if (!soundEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakCurrentQuestion() {
+            if (currentActiveData && currentActiveData.instruction) {
+                speak(currentActiveData.instruction);
+            }
+        }
+
+        function generateQuestionsForGame(gameId) {
+            let questions = [];
+            
+            if (gameId === 1) { // 1. Tebak Warna Ceria
+                const pool = [
+                    { name: "Merah", emoji: "🍎" }, { name: "Biru", emoji: "🐳" },
+                    { name: "Kuning", emoji: "⭐" }, { name: "Hijau", emoji: "🥦" },
+                    { name: "Ungu", emoji: "🍇" }, { name: "Oranye", emoji: "🍊" },
+                    { name: "Merah Muda", emoji: "🌸" }, { name: "Coklat", emoji: "🍫" },
+                    { name: "Hitam", emoji: "🎱" }, { name: "Putih", emoji: "☁️" }
+                ];
+                pool.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = pool[i];
+                    let others = pool.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, others[0].name, others[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Manakah warna ${target.name}?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            } 
+            else if (gameId === 2) { // 2. Hitung Buah Segar
+                let usedCounts = [];
+                for (let i = 0; i < 10; i++) {
+                    let count;
+                    do {
+                        count = Math.floor(Math.random() * 10) + 1;
+                    } while (usedCounts.includes(count) && usedCounts.length < 10);
+                    usedCounts.push(count);
+
+                    let wrong1 = count === 1 ? 2 : count - 1;
+                    let wrong2 = count === 10 ? 8 : count + 2;
+                    let opts = [String(count), String(wrong1), String(wrong2)].sort(() => Math.random() - 0.5);
+                    let emojis = ["🍎", "🍊", "🍌", "🍇", "🍓", "🍉", "🍍", "🍈", "🍑", "🍒"];
+                    let chosenEmoji = emojis[i];
+                    questions.push({
+                        instruction: `Berapakah jumlah buah ${chosenEmoji.repeat(count)} ?`,
+                        media: chosenEmoji.repeat(count),
+                        options: opts,
+                        answer: String(count)
+                    });
+                }
+            }
+            else if (gameId === 3) { // 3. Mengenal Huruf A-Z
+                const alphabets = [
+                    { letter: "A", word: "Apel", emoji: "🍎" }, { letter: "B", word: "Bola", emoji: "⚽" },
+                    { letter: "C", word: "Cicak", emoji: "🦎" }, { letter: "D", word: "Duren", emoji: "🍈" },
+                    { letter: "E", word: "Ember", emoji: "🪣" }, { letter: "F", word: "Foto", emoji: "🖼️" },
+                    { letter: "G", word: "Gajah", emoji: "🐘" }, { letter: "H", word: "Harimau", emoji: "🐅" },
+                    { letter: "I", word: "Ikan", emoji: "🐟" }, { letter: "J", word: "Jeruk", emoji: "🍊" }
+                ];
+                alphabets.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = alphabets[i];
+                    let pool = alphabets.filter(x => x.letter !== target.letter).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.letter, pool[0].letter, pool[1].letter].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Huruf awal apakah untuk gambar ${target.word} (${target.emoji})?`, media: target.emoji, options: opts, answer: target.letter });
+                }
+            }
+            else if (gameId === 4) { // 4. Suara Hewan Lucu
+                const animals = [
+                    { name: "Singa", emoji: "🦁" }, { name: "Kucing", emoji: "🐱" },
+                    { name: "Sapi", emoji: "🐮" }, { name: "Bebek", emoji: "🦆" },
+                    { name: "Anjing", emoji: "🐶" }, { name: "Kambing", emoji: "🐐" },
+                    { name: "Ayam", emoji: "🐔" }, { name: "Katak", emoji: "🐸" },
+                    { name: "Monyet", emoji: "🐵" }, { name: "Burung", emoji: "🐦" }
+                ];
+                animals.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = animals[i];
+                    let pool = animals.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Hewan apakah yang dimaksud pada gambar berikut?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 5) { // 5. Bentuk Geometri
+                const shapes = [
+                    { name: "Lingkaran", emoji: "🔵" }, { name: "Persegi", emoji: "🟧" },
+                    { name: "Segitiga", emoji: "🔺" }, { name: "Bintang", emoji: "⭐" },
+                    { name: "Persegi Panjang", emoji: "🚪" }, { name: "Belah Ketupat", emoji: "💠" },
+                    { name: "Oval", emoji: "🥚" }, { name: "Trapesium", emoji: "🏛️" },
+                    { name: "Hati", emoji: "❤️" }, { name: "Tanda Tanya", emoji: "❓" }
+                ];
+                shapes.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = shapes[i];
+                    let pool = shapes.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Apakah nama bentuk geometri atau simbol berikut?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 6) { // 6. Besar atau Kecil?
+                const compData = [
+                    { instruction: "Pilih hewan yang berukuran LEBIH BESAR!", media: "🐘 vs 🐜", options: ["Gajah", "Semut", "Kumbang"], answer: "Gajah" },
+                    { instruction: "Pilih benda yang berukuran LEBIH KECIL!", media: "🐁 vs 🐘", options: ["Tikus", "Gajah", "Badak"], answer: "Tikus" },
+                    { instruction: "Pilih buah yang berukuran LEBIH BESAR!", media: "🍉 vs 🍓", options: ["Semangka", "Stroberi", "Anggur"], answer: "Semangka" },
+                    { instruction: "Pilih kendaraan yang LEBIH KECIL!", media: "🚲 vs 🚂", options: ["Sepeda", "Kereta Api", "Pesawat"], answer: "Sepeda" },
+                    { instruction: "Pilih hewan yang LEBIH BESAR!", media: "🐋 vs 🐟", options: ["Paus", "Ikan Kecil", "Cumi"], answer: "Paus" },
+                    { instruction: "Pilih bangunan yang LEBIH BESAR!", media: "🏢 vs 🛖", options: ["Gedung Pencakar Langit", "Pondok Kecil", "Tenda"], answer: "Gedung Pencakar Langit" },
+                    { instruction: "Pilih bola yang LEBIH KECIL!", media: "🎱 vs 🏀", options: ["Bola Pimpong / Kelereng", "Bola Basket", "Bola Sepak"], answer: "Bola Pimpong / Kelereng" },
+                    { instruction: "Pilih pohon yang LEBIH BESAR!", media: "🌳 vs 🌱", options: ["Pohon Raksasa", "Kecambah", "Rumput"], answer: "Pohon Raksasa" },
+                    { instruction: "Pilih hewan darat yang LEBIH KECIL!", media: "🐈 vs 🦁", options: ["Kucing", "Singa", "Harimau"], answer: "Kucing" },
+                    { instruction: "Pilih wadah yang LEBIH BESAR!", media: "🛢️ vs 🥤", options: ["Drum Minyak", "Gelas Kopi", "Botol"], answer: "Drum Minyak" }
+                ];
+                compData.sort(() => Math.random() - 0.5);
+                for (let item of compData) {
+                    questions.push({
+                        instruction: item.instruction,
+                        media: item.media,
+                        options: item.options.sort(() => Math.random() - 0.5),
+                        answer: item.answer
+                    });
+                }
+            }
+            else if (gameId === 7) { // 7. Panca Indera Kita
+                const senses = [
+                    { organ: "Mata", func: "Melihat pemandangan", emoji: "👁️" }, { organ: "Telinga", func: "Mendengar suara", emoji: "👂" },
+                    { organ: "Hidung", func: "Mencium wangi bunga", emoji: "👃" }, { organ: "Lidah", func: "Mengecap rasa makanan", emoji: "👅" },
+                    { organ: "Kulit", func: "Merasa sentuhan halus", emoji: "✋" }, { organ: "Mata", func: "Membaca buku cerita", emoji: "📖" },
+                    { organ: "Telinga", func: "Mendengarkan musik", emoji: "🎧" }, { organ: "Hidung", func: "Mencium bau masakan", emoji: "🍳" },
+                    { organ: "Lidah", func: "Merasakan manisnya gula", emoji: "🍬" }, { organ: "Kulit", func: "Meraba benda kasar atau halus", emoji: "🧸" }
+                ];
+                senses.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = senses[i];
+                    let pool = senses.filter(x => x.organ !== target.organ).map(x => x.organ).filter((v, idx, arr) => arr.indexOf(v) === idx).slice(0, 2);
+                    let opts = [target.organ, pool[0] || "Tangan", pool[1] || "Kaki"].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Alat indera apakah yang digunakan untuk ${target.func}?`, media: target.emoji, options: opts, answer: target.organ });
+                }
+            }
+            else if (gameId === 8) { // 8. Urutan Angka 1-5
+                let nums = [1, 2, 3, 4, 5, 2, 3, 1, 4, 2];
+                nums.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let n = nums[i];
+                    let nextN = n >= 5 ? 1 : n + 1;
+                    let wrong1 = n === 1 ? 3 : n - 1;
+                    let wrong2 = nextN === 5 ? 2 : nextN + 1;
+                    let opts = [String(nextN), String(wrong1), String(wrong2)].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Angka berapa yang urut setelah angka ${n}?`, media: `🔢 ${n} ... ?`, options: opts, answer: String(nextN) });
+                }
+            }
+            else if (gameId === 9) { // 9. Kendaraan & Tempatnya
+                const vehicles = [
+                    { name: "Mobil", place: "Darat", emoji: "🚗" }, { name: "Pesawat", place: "Udara", emoji: "✈️" },
+                    { name: "Kapal Laut", place: "Laut", emoji: "🚢" }, { name: "Sepeda", place: "Darat", emoji: "🚲" },
+                    { name: "Helikopter", place: "Udara", emoji: "🚁" }, { name: "Perahu", place: "Laut", emoji: "⛵" },
+                    { name: "Kereta Api", place: "Darat", emoji: "🚆" }, { name: "Balon Udara", place: "Udara", emoji: "🎈" },
+                    { name: "Kapal Selam", place: "Laut", emoji: "🛥️" }, { name: "Motor", place: "Darat", emoji: "🏍️" }
+                ];
+                vehicles.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = vehicles[i];
+                    questions.push({ instruction: `Di manakah tempat beroperasinya ${target.name} (${target.emoji})?`, media: target.emoji, options: ["Darat", "Laut", "Udara"].sort(() => Math.random() - 0.5), answer: target.place });
+                }
+            }
+            else if (gameId === 10) { // 10. Cuaca & Alam
+                const weathers = [
+                    { name: "Cerah", emoji: "☀️" }, { name: "Hujan", emoji: "🌧️" },
+                    { name: "Pelangi", emoji: "🌈" }, { name: "Berawan", emoji: "☁️" },
+                    { name: "Petir", emoji: "⚡" }, { name: "Malam Berbintang", emoji: "🌙" },
+                    { name: "Salju", emoji: "❄️" }, { name: "Angin Kencang", emoji: "🌬️" },
+                    { name: "Gerhana", emoji: "🌑" }, { name: "Bunga Mekar", emoji: "🌻" }
+                ];
+                weathers.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = weathers[i];
+                    let pool = weathers.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Keadaan cuaca atau alam apakah pada gambar berikut?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 11) { // 11. Bagian Tubuhku
+                const bodyParts = [
+                    { name: "Kepala", emoji: "👦" }, { name: "Tangan", emoji: "✋" },
+                    { name: "Kaki", emoji: "🦶" }, { name: "Mata", emoji: "👀" },
+                    { name: "Telinga", emoji: "👂" }, { name: "Hidung", emoji: "👃" },
+                    { name: "Mulut", emoji: "👄" }, { name: "Gigi", emoji: "🦷" },
+                    { name: "Rambut", emoji: "💇" }, { name: "Jari", emoji: "✌️" }
+                ];
+                bodyParts.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = bodyParts[i];
+                    let pool = bodyParts.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Apakah nama bagian tubuh manusia ini?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 12) { // 12. Buah atau Sayur?
+                const foodData = [
+                    { q: "Manakah yang termasuk BUAH-BUAHAN segar?", media: "🍎 🍌 vs 🥦", ans: "Apel / Pisang", opts: ["Apel / Pisang", "Bayam", "Wortel"] },
+                    { q: "Manakah yang termasuk SAYUR-SAYURAN sehat?", media: "🥦 🥕 vs 🍉", ans: "Brokoli / Wortel", opts: ["Brokoli / Wortel", "Semangka", "Mangga"] },
+                    { q: "Manakah makanan yang berupa BUAH?", media: "🍇 vs 🥒", ans: "Anggur", opts: ["Anggur", "Timun", "Kentang"] },
+                    { q: "Manakah makanan yang berupa SAYUR?", media: "🥬 vs 🍓", ans: "Sawi / Kubis", opts: ["Sawi / Kubis", "Stroberi", "Jeruk"] },
+                    { q: "Manakah yang merupakan BUAH manis berwarna kuning?", media: "🥭", ans: "Mangga", opts: ["Mangga", "Terong", "Kol"] },
+                    { q: "Manakah yang merupakan SAYUR penambah darah?", media: "🥬", ans: "Bayam", opts: ["Bayam", "Melon", "Pepaya"] },
+                    { q: "Manakah yang termasuk BUAH berair?", media: "🍉", ans: "Semangka", opts: ["Semangka", "Brokoli", "Kentang"] },
+                    { q: "Manakah yang termasuk SAYUR akar?", media: "🥕", ans: "Wortel", opts: ["Wortel", "Apel", "Pisang"] },
+                    { q: "Manakah buah yang kulitnya berduri?", media: "🍈", ans: "Durian / Nangka", opts: ["Durian / Nangka", "Tomat", "Selada"] },
+                    { q: "Manakah sayuran yang berbentuk seperti bunga?", media: "🥦", ans: "Brokoli", opts: ["Brokoli", "Anggur", "Jeruk"] }
+                ];
+                foodData.sort(() => Math.random() - 0.5);
+                for (let item of foodData) {
+                    questions.push({ instruction: item.q, media: item.media, options: item.opts.sort(() => Math.random() - 0.5), answer: item.ans });
+                }
+            }
+            else if (gameId === 13) { // 13. Siang & Malam (Teks jawaban dihapus, hanya emoji)
+                const timeData = [
+                    { q: "Kapan waktu kita bangun tidur di pagi hari?", media: "🌅", ans: "Pagi Hari", opts: ["Pagi Hari", "Tengah Malam", "Waktu Tidur"] },
+                    { q: "Kapan waktu anak-anak beristirahat tidur malam?", media: "🌙", ans: "Malam Hari", opts: ["Malam Hari", "Siang Bolong", "Sore Hari"] },
+                    { q: "Kapan matahari terbit di ufuk timur?", media: "☀️", ans: "Pagi Hari", opts: ["Pagi Hari", "Malam Gelap", "Tengah Malam"] },
+                    { q: "Kapan bintang dan bulan bersinar terang di langit?", media: "✨", ans: "Malam Hari", opts: ["Malam Hari", "Siang Hari", "Sore Hari"] },
+                    { q: "Kapan kita makan siang bersama keluarga?", media: "🍲", ans: "Siang Hari", opts: ["Siang Hari", "Malam Hari", "Subuh"] },
+                    { q: "Kapan anak-anak pulang sekolah?", media: "🏫", ans: "Siang / Sore Hari", opts: ["Siang / Sore Hari", "Tengah Malam", "Pagi Buta"] },
+                    { q: "Kapan udara terasa paling dingin di malam hari?", media: "❄️", ans: "Malam Hari", opts: ["Malam Hari", "Siang Hari", "Pagi Hari"] },
+                    { q: "Kapan burung-burung mulai berkicau menyambut fajar?", media: "🐦", ans: "Pagi Hari", opts: ["Pagi Hari", "Malam Hari", "Sore Hari"] },
+                    { q: "Kapan langit berwarna kemerahan saat matahari terbenam?", media: "🌇", ans: "Sore Hari", opts: ["Sore Hari", "Pagi Hari", "Malam Hari"] },
+                    { q: "Kapan kita menyalakan lampu rumah?", media: "💡", ans: "Malam Hari", opts: ["Malam Hari", "Pagi Hari", "Siang Terang"] }
+                ];
+                timeData.sort(() => Math.random() - 0.5);
+                for (let item of timeData) {
+                    questions.push({ instruction: item.q, media: item.media, options: item.opts.sort(() => Math.random() - 0.5), answer: item.ans });
+                }
+            }
+            else if (gameId === 14) { // 14. Kebiasaan Baik
+                const habits = [
+                    { name: "Mencuci Tangan", emoji: "🧼" }, { name: "Gosok Gigi", emoji: "🪥" },
+                    { name: "Mandi Pagi", emoji: "🚿" }, { name: "Merapikan Mainan", emoji: "🧸" },
+                    { name: "Makan Makanan Sehat", emoji: "🥗" }, { name: "Tidur Cepat", emoji: "🛌" },
+                    { name: "Berdoa Sebelum Makan", emoji: "🤲" }, { name: "Membuang Sampah", emoji: "🗑️" },
+                    { name: "Merapikan Tempat Tidur", emoji: "🛏️" }, { name: "Mencuci Kaki", emoji: "💧" }
+                ];
+                habits.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = habits[i];
+                    let pool = habits.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Apakah nama kebiasaan baik dan terpuji ini?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 15) { // 15. Mencocokkan Bayangan
+                const siluets = [
+                    { name: "Kelinci", emoji: "🐰" }, { name: "Kupu-kupu", emoji: "🦋" },
+                    { name: "Mobil", emoji: "🚗" }, { name: "Bintang", emoji: "⭐" },
+                    { name: "Kucing", emoji: "🐱" }, { name: "Pohon", emoji: "🌳" },
+                    { name: "Ikan", emoji: "🐟" }, { name: "Rumah", emoji: "🏠" },
+                    { name: "Bunga", emoji: "🌻" }, { name: "Apel", emoji: "🍎" }
+                ];
+                siluets.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = siluets[i];
+                    let pool = siluets.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Siluet atau bayangan objek apakah ini?`, media: `👤 (${target.emoji})`, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 16) { // 16. Banyak atau Sedikit?
+                for (let i = 0; i < 10; i++) {
+                    let banyak = Math.floor(Math.random() * 4) + 6;
+                    let sedikit = Math.floor(Math.random() * 3) + 1;
+                    let askMore = Math.random() > 0.5;
+                    questions.push({
+                        instruction: askMore ? "Manakah jumlah benda yang LEBIH BANYAK?" : "Manakah jumlah benda yang LEBIH SEDIKIT?",
+                        media: `🍬 (${banyak}) vs 🍬 (${sedikit})`,
+                        options: [`${banyak} Buah`, `${sedikit} Buah`, "Sama Saja"].sort(() => Math.random() - 0.5),
+                        answer: askMore ? `${banyak} Buah` : `${sedikit} Buah`
+                    });
+                }
+            }
+            else if (gameId === 17) { // 17. Mengenal Profesi
+                const profs = [
+                    { name: "Dokter", emoji: "👩‍⚕️" }, { name: "Polisi", emoji: "👮" },
+                    { name: "Koki", emoji: "👨‍🍳" }, { name: "Guru", emoji: "👩‍🏫" },
+                    { name: "Pemadam Kebakaran", emoji: "👨‍🚒" }, { name: "Pilot", emoji: "👨‍✈️" },
+                    { name: "Astronot", emoji: "👨‍🚀" }, { name: "Petani", emoji: "🧑‍🌾" },
+                    { name: "Nelayan", emoji: "🎣" }, { name: "Ilmuwan", emoji: "🔬" }
+                ];
+                profs.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = profs[i];
+                    let pool = profs.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Apakah nama profesi atau pekerjaan mulia ini?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 18) { // 18. Tebak Emosi Wajah
+                const emotions = [
+                    { name: "Senang", emoji: "😊" }, { name: "Sedih", emoji: "😢" },
+                    { name: "Marah", emoji: "😡" }, { name: "Terkejut", emoji: "😲" },
+                    { name: "Tertawa", emoji: "😂" }, { name: "Kacamata Cinta", emoji: "😍" },
+                    { name: "Bingung", emoji: "😕" }, { name: "Mengantuk", emoji: "😴" },
+                    { name: "Tenang", emoji: "😌" }, { name: "Keren", emoji: "😎" }
+                ];
+                emotions.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = emotions[i];
+                    let pool = emotions.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5).slice(0, 2);
+                    let opts = [target.name, pool[0].name, pool[1].name].sort(() => Math.random() - 0.5);
+                    questions.push({ instruction: `Bagaimanakah ekspresi atau emosi wajah ini?`, media: target.emoji, options: opts, answer: target.name });
+                }
+            }
+            else if (gameId === 19) { // 19. Pola Warna Sederhana
+                const polaList = [
+                    { q: "Lanjutkan pola warna: Merah, Biru, Merah, Biru, ... ?", media: "🔴 🔵 🔴 🔵 ❓", ans: "Merah", opts: ["Merah", "Biru", "Hijau"] },
+                    { q: "Lanjutkan pola warna: Hijau, Kuning, Hijau, Kuning, ... ?", media: "🟢 🟡 🟢 🟡 ❓", ans: "Hijau", opts: ["Hijau", "Kuning", "Merah"] },
+                    { q: "Lanjutkan pola bentuk: Bintang, Lingkaran, Bintang, Lingkaran, ... ?", media: "⭐ 🔵 ⭐ 🔵 ❓", ans: "Bintang", opts: ["Bintang", "Lingkaran", "Kotak"] },
+                    { q: "Lanjutkan pola warna: Merah, Merah, Biru, Merah, Merah, ... ?", media: "🔴 🔴 🔵 🔴 🔴 ❓", ans: "Biru", opts: ["Biru", "Merah", "Hijau"] },
+                    { q: "Lanjutkan pola bentuk: Kotak, Segitiga, Kotak, Segitiga, ... ?", media: "🟧 🔺 🟧 🔺 ❓", ans: "Kotak", opts: ["Kotak", "Segitiga", "Bintang"] },
+                    { q: "Lanjutkan urutan angka: 1, 2, 1, 2, 1, ... ?", media: "🔢 1 2 1 2 1 ❓", ans: "2", opts: ["2", "1", "3"] },
+                    { q: "Lanjutkan pola buah: Apel, Pisang, Apel, Pisang, ... ?", media: "🍎 🍌 🍎 🍌 ❓", ans: "Apel", opts: ["Apel", "Pisang", "Jeruk"] },
+                    { q: "Lanjutkan pola warna: Kuning, Ungu, Kuning, Ungu, ... ?", media: "🟡 🟣 🟡 🟣 ❓", ans: "Kuning", opts: ["Kuning", "Ungu", "Biru"] },
+                    { q: "Lanjutkan pola hewan: Kucing, Bebek, Kucing, Bebek, ... ?", media: "🐱 🦆 🐱 🦆 ❓", ans: "Kucing", opts: ["Kucing", "Bebek", "Ayam"] },
+                    { q: "Lanjutkan pola simbol: Senang, Sedih, Senang, Sedih, ... ?", media: "😊 😢 😊 😢 ❓", ans: "Senang", opts: ["Senang", "Sedih", "Marah"] }
+                ];
+                polaList.sort(() => Math.random() - 0.5);
+                for (let item of polaList) {
+                    questions.push({ instruction: item.q, media: item.media, options: item.opts.sort(() => Math.random() - 0.5), answer: item.ans });
+                }
+            }
+            else { // 20. Rambu Lalu Lintas (Emoji disesuaikan dengan tiap soal)
+                const traffic = [
+                    { name: "Berhenti", emoji: "🔴" }, 
+                    { name: "Hati-hati", emoji: "🟡" },
+                    { name: "Jalan", emoji: "🟢" }, 
+                    { name: "Dilarang Parkir", emoji: "🅿️❌" },
+                    { name: "Dilarang Masuk", emoji: "⛔" }, 
+                    { name: "Lampu Penyeberangan", emoji: "🚶" },
+                    { name: "Jalan Licin", emoji: "⚠️" }, 
+                    { name: "Area Sekolah", emoji: "🚸" },
+                    { name: "Dilarang Belok Kanan", emoji: "↪️❌" }, 
+                    { name: "Wajib Belok Kiri", emoji: "⬅️" }
+                ];
+                traffic.sort(() => Math.random() - 0.5);
+                for (let i = 0; i < 10; i++) {
+                    let target = traffic[i];
+                    let pool = traffic.filter(x => x.name !== target.name).sort(() => Math.random() - 0.5);
+                    let opts = [target.name, pool[0].name, pool[1].name || "Putar Balik"].sort(() => Math.random() - 0.5);
+                    questions.push({ 
+                        instruction: `Apa arti dari simbol atau rambu lalu lintas berikut?`, 
+                        media: target.emoji, 
+                        options: opts, 
+                        answer: target.name 
+                    });
+                }
+            }
+            return questions;
+        }
+
+        function startSpecificGame(index) {
+            currentGameIndex = index;
+            currentQuestionIdx = 0;
+            currentScoreCount = 0;
+            const game = gamesData[index];
+
+            document.getElementById('menu-view').classList.add('hidden');
+            document.getElementById('game-room').classList.remove('hidden');
+            
+            document.getElementById('room-game-id').innerText = `GAME #${game.id} DARI 20`;
+            document.getElementById('room-game-title').innerText = game.title;
+
+            gameQuestions = generateQuestionsForGame(game.id);
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIdx >= 10) {
+                showCompletion();
+                return;
+            }
+
+            currentActiveData = gameQuestions[currentQuestionIdx];
+            document.getElementById('room-instruction').innerText = currentActiveData.instruction;
+            document.getElementById('question-media').innerText = currentActiveData.media;
+
+            updateScoreStars();
+
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            
+            currentActiveData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "bg-pink-100 hover:bg-pink-200 border-2 border-pink-300 font-bold text-pink-900 py-3 px-4 rounded-2xl shadow transition cursor-pointer text-sm md:text-base bouncy";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, currentActiveData.answer, btn);
+                optContainer.appendChild(btn);
+            });
+
+            speak(currentActiveData.instruction);
+        }
+
+        function checkAnswer(selected, correct, btnElement) {
+            if (selected === correct) {
+                speak("Hebat! Jawabanmu benar!");
+                btnElement.classList.remove('bg-pink-100', 'border-pink-300', 'text-pink-900');
+                btnElement.classList.add('bg-emerald-500', 'border-emerald-600', 'text-white');
+                
+                currentScoreCount++;
+                totalScore = Math.min(200, totalScore + 1);
+                document.getElementById('header-stars').innerText = `${totalScore} / 200`;
+                
+                currentQuestionIdx++; 
+                setTimeout(loadQuestion, 800);
+            } else {
+                speak("Kurang tepat, ayo coba lagi!");
+                btnElement.classList.remove('bg-pink-100', 'border-pink-300', 'text-pink-900');
+                btnElement.classList.add('bg-rose-500', 'border-rose-600', 'text-white');
+                
+                setTimeout(() => {
+                    btnElement.classList.remove('bg-rose-500', 'border-rose-600', 'text-white');
+                    btnElement.classList.add('bg-pink-100', 'border-pink-300', 'text-pink-900');
+                }, 500);
+            }
+        }
+
+        function updateScoreStars() {
+            const starsContainer = document.getElementById('game-stars');
+            let starsHTML = '';
+            for(let i = 0; i < 10; i++) {
+                starsHTML += `<span class="text-xs md:text-sm">${i < currentQuestionIdx ? '⭐' : '⚪'}</span>`;
+            }
+            starsContainer.innerHTML = starsHTML;
+        }
+
+        function showCompletion() {
+            speak("Yey! Kamu berhasil menyelesaikan semua soal di game ini dengan luar biasa!");
+            document.getElementById('completion-modal').classList.remove('hidden');
+        }
+
+        function backToMenu() {
+            document.getElementById('completion-modal').classList.add('hidden');
+            document.getElementById('game-room').classList.add('hidden');
+            document.getElementById('menu-view').classList.remove('hidden');
+            renderMenu();
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
